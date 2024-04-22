@@ -1,8 +1,15 @@
 #include <iostream>
 
+#include "Core/CorvusEditor.h"
+
 int main() {
 
     std::cout << "Hello there" << std::endl;
+
+    {
+        CorvusEngine::CorvusEditor Editor;
+        Editor.Run();
+    }
 
     std::cin.get();
 
