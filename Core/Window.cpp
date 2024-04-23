@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Logger.h"
+
 namespace CorvusEngine {
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -45,13 +47,13 @@ Window::Window(int width, int height, LPCWSTR name)
     wc.lpfnWndProc = &WndProc;
 
     if(!::RegisterClassExW(&wc))
-        std::cout << "Error, window class not created" << std::endl;
+        LOG(Error, "Window Class not created !");
 
     m_hwnd = ::CreateWindowExW(WS_EX_OVERLAPPEDWINDOW, wc.lpszClassName, name, WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, nullptr, this);
 
     if(!m_hwnd)
-        std::cout << "Error, window not created" << std::endl;
+        LOG(Error, "Window not created !");
 
     SetWindowLongPtr(m_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 

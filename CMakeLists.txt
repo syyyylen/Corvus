@@ -7,4 +7,6 @@ add_executable(Corvus main.cpp
         Core/Window.cpp
         Core/Window.h
         Core/CorvusEditor.cpp
-        Core/CorvusEditor.h)
+        Core/CorvusEditor.h
+        Core/Logger.cpp
+        Core/Logger.h)
