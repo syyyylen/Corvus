@@ -17,6 +17,7 @@ public:
     void Close();
     void OnResize(int width, int height);
     void DefineOnResize(std::function<void(int width, int height)> resizeFunc) { m_resize = resizeFunc; }
+    void Maximize();
 
 private:
     bool m_isRunning;

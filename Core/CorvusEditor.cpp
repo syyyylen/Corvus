@@ -13,6 +13,8 @@ CorvusEditor::CorvusEditor()
         // TODO define resize functions
         LOG(Debug, "Window resize !");
     });
+
+    // m_window->Maximize();
 }
 
 CorvusEditor::~CorvusEditor()

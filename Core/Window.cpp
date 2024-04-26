@@ -88,4 +88,18 @@ void Window::OnResize(int width, int height)
     if(m_resize)
         m_resize(width, height);
 }
+
+void Window::Maximize()
+{
+    // Get the monitor work area dimensions
+    RECT workArea;
+    MONITORINFO monitorInfo;
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    GetMonitorInfo(MonitorFromWindow(m_hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo);
+    workArea = monitorInfo.rcWork;
+
+    // Set the window position and size
+    SetWindowPos(m_hwnd, HWND_TOP, workArea.left, workArea.top, workArea.right - workArea.left, workArea.bottom - workArea.top, SWP_SHOWWINDOW);
+}
+
 } // CorvusEngine
