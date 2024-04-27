@@ -1,5 +1,6 @@
 #include "CorvusEditor.h"
 #include "Logger.h"
+#include <ImGui/imgui.h>
 
 namespace CorvusEngine{
 
@@ -39,6 +40,21 @@ void CorvusEditor::Run()
 
         commandBuffer->BindRenderTargets({ texture }, nullptr);
         commandBuffer->ClearRenderTarget(texture, 1.0f, 8.0f, 0.0f, 1.0f);
+
+        m_renderer->BeginImGuiFrame();
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("Quit", "Alt+F4")) {
+                    m_window->Close();
+                }
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
+        }
+        m_renderer->EndImGuiFrame();
 
         commandBuffer->ImageBarrier(texture, D3D12_RESOURCE_STATE_PRESENT);
         commandBuffer->End();

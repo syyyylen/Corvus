@@ -22,6 +22,7 @@ public:
     DescriptorHeap(std::shared_ptr<Device> device, D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t size);
     ~DescriptorHeap();
 
+    ID3D12DescriptorHeap* GetHeap() { return m_heap; }
     DescriptorHandle Allocate();
     void Free(DescriptorHandle& handle);
 

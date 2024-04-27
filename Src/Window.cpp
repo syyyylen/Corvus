@@ -1,11 +1,17 @@
 #include "Window.h"
 #include "Logger.h"
+#include <ImGui/imgui_impl_win32.h>
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace CorvusEngine {
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+
+    if(ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
+        return 1;
 
     switch(msg)
     {

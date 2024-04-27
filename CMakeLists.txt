@@ -4,14 +4,14 @@ project(Corvus)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Corvus main.cpp
+        External/D3D12MA/D3D12MemAlloc.h
+        External/D3D12MA/D3D12MemAlloc.cpp
         Src/Window.cpp
         Src/Window.h
         Src/CorvusEditor.cpp
         Src/CorvusEditor.h
         Src/Logger.cpp
         Src/Logger.h
-        External/D3D12MA/D3D12MemAlloc.h
-        External/D3D12MA/D3D12MemAlloc.cpp
         Src/RHI/Renderer.cpp
         Src/RHI/Renderer.h
         Src/RHI/Device.cpp
@@ -30,7 +30,22 @@ add_executable(Corvus main.cpp
         Src/RHI/Texture.cpp
         Src/RHI/Texture.h
         Src/RHI/CommandBuffer.cpp
-        Src/RHI/CommandBuffer.h)
+        Src/RHI/CommandBuffer.h
+        External/ImGui/imconfig.h
+        External/ImGui/imgui.cpp
+        External/ImGui/imgui.h
+        External/ImGui/imgui_demo.cpp
+        External/ImGui/imgui_draw.cpp
+        External/ImGui/imgui_impl_dx12.cpp
+        External/ImGui/imgui_impl_dx12.h
+        External/ImGui/imgui_impl_win32.cpp
+        External/ImGui/imgui_impl_win32.h
+        External/ImGui/imgui_internal.h
+        External/ImGui/imgui_tables.cpp
+        External/ImGui/imgui_widgets.cpp
+        External/ImGui/imstb_rectpack.h
+        External/ImGui/imstb_textedit.h
+        External/ImGui/imstb_truetype.h)
 
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/External)
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Core)
