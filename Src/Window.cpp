@@ -1,7 +1,4 @@
 #include "Window.h"
-
-#include <iostream>
-
 #include "Logger.h"
 
 namespace CorvusEngine {

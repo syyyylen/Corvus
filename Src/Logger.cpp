@@ -1,7 +1,5 @@
 #include "Logger.h"
 
-#include <iostream>
-#include <Windows.h>
 #include <filesystem>
 #include <fstream>
 

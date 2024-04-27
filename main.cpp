@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Core/CorvusEditor.h"
+#include "Src/CorvusEditor.h"
 
 int main() {
 

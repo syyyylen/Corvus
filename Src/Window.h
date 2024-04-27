@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Windows.h>
-#include <functional>
+#include <Core.h>
 
 namespace CorvusEngine {
 
@@ -18,6 +17,7 @@ public:
     void OnResize(int width, int height);
     void DefineOnResize(std::function<void(int width, int height)> resizeFunc) { m_resize = resizeFunc; }
     void Maximize();
+    HWND GetHandle() { return m_hwnd; }
 
 private:
     bool m_isRunning;

@@ -1,7 +1,8 @@
 #pragma once
-#include <memory>
+#include <Core.h>
 
 #include "Window.h"
+#include "RHI/Renderer.h"
 
 namespace CorvusEngine{
 
@@ -14,6 +15,7 @@ public:
 
 private:
     std::shared_ptr<Window> m_window;
+    std::unique_ptr<Renderer> m_renderer;
 };
 
 }
