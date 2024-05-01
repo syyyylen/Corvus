@@ -1,6 +1,7 @@
 #include "CorvusEditor.h"
 #include "Logger.h"
 #include <ImGui/imgui.h>
+#include "ShaderCompiler.h"
 
 namespace CorvusEngine{
 
@@ -18,6 +19,10 @@ CorvusEditor::CorvusEditor()
     // m_window->Maximize();
 
     m_renderer = std::make_unique<Renderer>(m_window->GetHandle());
+
+    Shader shader;
+    ShaderCompiler::CompileShader("../../Shaders/SimpleVertex.hlsl", ShaderType::Vertex, shader);
+    ShaderCompiler::CompileShader("../../Shaders/SimplePixel.hlsl", ShaderType::Pixel, shader);
 }
 
 CorvusEditor::~CorvusEditor()

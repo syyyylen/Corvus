@@ -10,7 +10,7 @@ struct DescriptorHandle
     D3D12_CPU_DESCRIPTOR_HANDLE CPU;
     D3D12_GPU_DESCRIPTOR_HANDLE GPU;
 
-    int HeapIdx;
+    uint32_t HeapIdx;
 
     bool IsValid() { return CPU.ptr != 0; }
     bool IsShaderVisible() { return GPU.ptr != 0; }

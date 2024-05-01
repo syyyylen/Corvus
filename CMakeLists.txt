@@ -43,12 +43,16 @@ add_executable(Corvus main.cpp
         External/ImGui/imgui_widgets.cpp
         External/ImGui/imstb_rectpack.h
         External/ImGui/imstb_textedit.h
-        External/ImGui/imstb_truetype.h)
+        External/ImGui/imstb_truetype.h
+        Src/ShaderCompiler.cpp
+        Src/ShaderCompiler.h)
 
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/External)
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Core)
 
-target_link_libraries(Corvus
+target_link_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
+target_link_libraries(Corvus PUBLIC
         d3d12.lib
         dxgi.lib
-        dxguid.lib)
+        dxcompiler.lib)

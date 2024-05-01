@@ -46,6 +46,7 @@ DescriptorHandle DescriptorHeap::Allocate()
     m_size++;
 
     DescriptorHandle handle = {};
+    handle.HeapIdx = idx;
 
     auto CPUstartPtr = m_heap->GetCPUDescriptorHandleForHeapStart();
     handle.CPU.ptr = CPUstartPtr.ptr + offset;
