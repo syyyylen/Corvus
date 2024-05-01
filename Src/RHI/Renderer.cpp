@@ -12,8 +12,6 @@ Renderer::Renderer(HWND hwnd) : m_frameIndex(0)
     m_rtvHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 512);
     m_shaderHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
     m_allocator = std::make_shared<Allocator>(m_device);
-    m_directFence = std::make_shared<Fence>(m_device);
-    m_directFenceValue = 0;
     m_swapChain = std::make_shared<SwapChain>(m_device, m_directCommandQueue, m_rtvHeap, hwnd);
 
     LOG(Debug, "Renderer Initialization Completed");
@@ -60,14 +58,14 @@ void Renderer::Resize(uint32_t width, uint32_t height)
 void Renderer::BeginFrame()
 {
     m_frameIndex = m_swapChain->AcquireImage();
-    m_directFence->Wait(m_frameValues[m_frameIndex], 10'000'000);
+    m_directCommandQueue->Wait(m_frameValues[m_frameIndex], 10'000'000);
 
     m_allocator->GetAllocator()->SetCurrentFrameIndex(m_frameIndex);
 }
 
 void Renderer::EndFrame()
 {
-    m_frameValues[m_frameIndex] = m_directFence->GetValue();
+    m_frameValues[m_frameIndex] = m_directCommandQueue->GetFenceValue();
 }
 
 void Renderer::Present(bool vsync)
@@ -93,35 +91,19 @@ void Renderer::EndImGuiFrame()
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), cmdList);
 }
 
-void Renderer::WaitForPreviousHostSubmit(D3D12_COMMAND_LIST_TYPE type)
-{
-    if(type == D3D12_COMMAND_LIST_TYPE_DIRECT)
-        m_directFence->Wait(m_directFenceValue, 10'000'000);
-}
-
-void Renderer::WaitForPreviousDeviceSubmit(D3D12_COMMAND_LIST_TYPE type)
-{
-    if(type == D3D12_COMMAND_LIST_TYPE_DIRECT)
-        m_directCommandQueue->Wait(m_directFence, 10'000'000);
-}
-
-void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>> &buffers, D3D12_COMMAND_LIST_TYPE type)
+void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& buffers, D3D12_COMMAND_LIST_TYPE type)
 {
     if(type == D3D12_COMMAND_LIST_TYPE_DIRECT)
     {
         m_directCommandQueue->Submit(buffers);
-        m_directFenceValue = m_directFence->Signal(m_directCommandQueue);
+        m_directCommandQueue->Signal();
     }
-}
-
-void Renderer::FlushQueues()
-{
-    WaitForPreviousHostSubmit(D3D12_COMMAND_LIST_TYPE_DIRECT);
 }
 
 void Renderer::WaitForPreviousFrame()
 {
-    uint64_t wait = m_directFence->Signal(m_directCommandQueue);
-    m_directFence->Wait(wait, 10'000'000);
+    uint64_t wait = m_directCommandQueue->Signal();
+    m_directCommandQueue->Wait(wait, 10'000'000);
 }
+
 }

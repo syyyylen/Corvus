@@ -23,8 +23,6 @@ add_executable(Corvus main.cpp
         Src/RHI/DescriptorHeap.h
         Src/RHI/Allocator.cpp
         Src/RHI/Allocator.h
-        Src/RHI/Fence.cpp
-        Src/RHI/Fence.h
         Src/RHI/SwapChain.cpp
         Src/RHI/SwapChain.h
         Src/RHI/Texture.cpp

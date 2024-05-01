@@ -6,7 +6,6 @@
 #include "CommandQueue.h"
 #include "DescriptorHeap.h"
 #include "Device.h"
-#include "Fence.h"
 #include "SwapChain.h"
 
 namespace CorvusEngine{
@@ -25,15 +24,13 @@ public:
     void BeginImGuiFrame();
     void EndImGuiFrame();
 
-    void WaitForPreviousHostSubmit(D3D12_COMMAND_LIST_TYPE type);
-    void WaitForPreviousDeviceSubmit(D3D12_COMMAND_LIST_TYPE type);
     void ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& buffers, D3D12_COMMAND_LIST_TYPE type);
 
     std::shared_ptr<CommandBuffer> GetCurrentCommandBuffer() { return m_commandBuffers[m_frameIndex]; }
     std::shared_ptr<Texture> GetBackBuffer() { return m_swapChain->GetTexture(m_frameIndex); }
 
 private:
-    void FlushQueues();
+    // void FlushQueues();
     void WaitForPreviousFrame();
 
 private:
@@ -42,8 +39,6 @@ private:
     std::shared_ptr<DescriptorHeap> m_rtvHeap;
     std::shared_ptr<DescriptorHeap> m_shaderHeap;
     std::shared_ptr<Allocator> m_allocator;
-    std::shared_ptr<Fence> m_directFence;
-    uint64_t m_directFenceValue;
     std::shared_ptr<SwapChain> m_swapChain;
 
     uint64_t m_frameIndex;

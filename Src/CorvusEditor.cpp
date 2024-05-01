@@ -42,11 +42,12 @@ void CorvusEditor::Run()
         commandBuffer->ClearRenderTarget(texture, 1.0f, 8.0f, 0.0f, 1.0f);
 
         m_renderer->BeginImGuiFrame();
+
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Quit", "Alt+F4")) {
+                if (ImGui::MenuItem("Exit", "Alt+F4")) {
                     m_window->Close();
                 }
                 ImGui::EndMenu();
@@ -54,6 +55,11 @@ void CorvusEditor::Run()
 
             ImGui::EndMainMenuBar();
         }
+
+        ImGui::Begin("FrameRate");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+
         m_renderer->EndImGuiFrame();
 
         commandBuffer->ImageBarrier(texture, D3D12_RESOURCE_STATE_PRESENT);
