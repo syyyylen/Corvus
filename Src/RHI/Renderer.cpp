@@ -9,10 +9,10 @@ Renderer::Renderer(HWND hwnd) : m_frameIndex(0)
 {
     m_device = std::make_shared<Device>();
     m_directCommandQueue = std::make_shared<CommandQueue>(m_device, D3D12_COMMAND_LIST_TYPE_DIRECT);
-    m_rtvHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 512);
-    m_shaderHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
+    m_heaps.RtvHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 512);
+    m_heaps.ShaderHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
     m_allocator = std::make_shared<Allocator>(m_device);
-    m_swapChain = std::make_shared<SwapChain>(m_device, m_directCommandQueue, m_rtvHeap, hwnd);
+    m_swapChain = std::make_shared<SwapChain>(m_device, m_directCommandQueue, m_heaps.RtvHeap, hwnd);
 
     LOG(Debug, "Renderer Initialization Completed");
 
@@ -21,7 +21,7 @@ Renderer::Renderer(HWND hwnd) : m_frameIndex(0)
         m_frameValues[i] = 0;
     }
 
-    m_fontDescriptor = m_shaderHeap->Allocate();
+    m_fontDescriptor = m_heaps.ShaderHeap->Allocate();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -34,7 +34,7 @@ Renderer::Renderer(HWND hwnd) : m_frameIndex(0)
 
     ImGui_ImplWin32_EnableDpiAwareness();
     ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX12_Init(m_device->GetDevice(), FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, m_shaderHeap->GetHeap(), m_fontDescriptor.CPU, m_fontDescriptor.GPU);
+    ImGui_ImplDX12_Init(m_device->GetDevice(), FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, m_heaps.ShaderHeap->GetHeap(), m_fontDescriptor.CPU, m_fontDescriptor.GPU);
 }
 
 Renderer::~Renderer()
@@ -44,7 +44,7 @@ Renderer::~Renderer()
     ImGui_ImplDX12_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
-    m_shaderHeap->Free(m_fontDescriptor);
+    m_heaps.ShaderHeap->Free(m_fontDescriptor);
 }
 
 void Renderer::Resize(uint32_t width, uint32_t height)
@@ -84,7 +84,7 @@ void Renderer::EndImGuiFrame()
 {
     auto cmdList = m_commandBuffers[m_frameIndex]->GetCommandList();
 
-    ID3D12DescriptorHeap* pHeaps[] = { m_shaderHeap->GetHeap() };
+    ID3D12DescriptorHeap* pHeaps[] = { m_heaps.ShaderHeap->GetHeap() };
     cmdList->SetDescriptorHeaps(1, pHeaps);
 
     ImGui::Render();
@@ -103,6 +103,11 @@ void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandLi
 std::shared_ptr<GraphicsPipeline> Renderer::CreateGraphicsPipeline(GraphicsPipelineSpecs& specs)
 {
     return std::make_shared<GraphicsPipeline>(m_device, specs);
+}
+
+std::shared_ptr<Buffer> Renderer::CreateBuffer(uint64_t size, uint64_t stride, BufferType type, bool readback)
+{
+    return std::make_shared<Buffer>(m_allocator, size, stride, type, readback);
 }
 
 void Renderer::WaitForPreviousFrame()

@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include <ImGui/imgui.h>
 #include "ShaderCompiler.h"
+#include "RHI/Buffer.h"
 
 namespace CorvusEngine{
 
@@ -30,6 +31,14 @@ CorvusEditor::CorvusEditor()
     ShaderCompiler::CompileShader("../../Shaders/SimplePixel.hlsl", ShaderType::Pixel, specs.ShadersBytecodes[ShaderType::Pixel]);
 
     m_trianglePipeline = m_renderer->CreateGraphicsPipeline(specs);
+
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f
+    };
+
+    m_vertexBuffer = m_renderer->CreateBuffer(sizeof(vertices), sizeof(float) * 3, BufferType::Vertex, false);
 }
 
 CorvusEditor::~CorvusEditor()

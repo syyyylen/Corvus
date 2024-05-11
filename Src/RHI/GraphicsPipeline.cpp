@@ -56,7 +56,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<Device> device, GraphicsPipel
     ID3D12ShaderReflection* pVertexReflection = GetReflection(vertexBytecode, &VertexDesc);
     ID3D12ShaderReflection* pPixelReflection = GetReflection(fragmentBytecode, &PixelDesc);
 
-    for (int BoundResourceIndex = 0; BoundResourceIndex < VertexDesc.BoundResources; BoundResourceIndex++)
+    for(int BoundResourceIndex = 0; BoundResourceIndex < VertexDesc.BoundResources; BoundResourceIndex++)
     {
         D3D12_SHADER_INPUT_BIND_DESC ShaderInputBindDesc = {};
         pVertexReflection->GetResourceBindingDesc(BoundResourceIndex, &ShaderInputBindDesc);
@@ -64,7 +64,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<Device> device, GraphicsPipel
         BindCount++;
     }
 
-    for (int BoundResourceIndex = 0; BoundResourceIndex < PixelDesc.BoundResources; BoundResourceIndex++)
+    for(int BoundResourceIndex = 0; BoundResourceIndex < PixelDesc.BoundResources; BoundResourceIndex++)
     {
         D3D12_SHADER_INPUT_BIND_DESC ShaderInputBindDesc = {};
         pPixelReflection->GetResourceBindingDesc(BoundResourceIndex, &ShaderInputBindDesc);
@@ -74,7 +74,7 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<Device> device, GraphicsPipel
 
     std::sort(ShaderBinds.begin(), ShaderBinds.end(), CompareShaderInput);
 
-    for (int ShaderBindIndex = 0; ShaderBindIndex < BindCount; ShaderBindIndex++)
+    for(int ShaderBindIndex = 0; ShaderBindIndex < BindCount; ShaderBindIndex++)
     {
         D3D12_SHADER_INPUT_BIND_DESC ShaderInputBindDesc = ShaderBinds[ShaderBindIndex];
 
@@ -128,9 +128,12 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<Device> device, GraphicsPipel
         LOG(Error, errorMessage);
         pErrorBlob->Release();
     }
-    HRESULT Result = device->GetDevice()->CreateRootSignature(0, pRootSignatureBlob->GetBufferPointer(), pRootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
-    if (FAILED(Result)) {
-        LOG(Error, "GraphicsPipeline : Failed to create root signature!");
+    HRESULT hr = device->GetDevice()->CreateRootSignature(0, pRootSignatureBlob->GetBufferPointer(), pRootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+    if(FAILED(hr))
+    {
+        LOG(Error, "GraphicsPipeline : failed to create root signature !");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
     }
     pRootSignatureBlob->Release();
 
@@ -215,9 +218,12 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<Device> device, GraphicsPipel
     Desc.InputLayout.NumElements = static_cast<uint32_t>(InputElementDescs.size());
     Desc.pRootSignature = m_rootSignature;
 
-    Result = device->GetDevice()->CreateGraphicsPipelineState(&Desc, IID_PPV_ARGS(&m_pipelineState));
-    if (FAILED(Result)) {
+    hr = device->GetDevice()->CreateGraphicsPipelineState(&Desc, IID_PPV_ARGS(&m_pipelineState));
+    if(FAILED(hr))
+    {
         LOG(Error, "GraphicsPipeline: Failed to create graphics pipeline!");
+        std::string errorMsg = std::system_category().message(hr);
+        LOG(Error, errorMsg);
         return;
     }
 
