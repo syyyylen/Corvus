@@ -1,7 +1,7 @@
 #pragma once
 #include <Core.h>
 
-#include "CommandBuffer.h"
+#include "CommandList.h"
 #include "Device.h"
 
 namespace CorvusEngine {
@@ -15,7 +15,7 @@ public:
 
     uint64_t Signal();
     void Wait(uint64_t target, uint64_t timeout);
-    void Submit(const std::vector<std::shared_ptr<CommandBuffer>>& buffers);
+    void Submit(const std::vector<std::shared_ptr<CommandList>>& buffers);
 
     ID3D12CommandQueue* GetCommandQueue() { return m_commandQueue; }
     D3D12_COMMAND_LIST_TYPE GetType() { return m_type; }

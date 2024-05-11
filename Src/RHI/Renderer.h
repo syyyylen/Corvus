@@ -2,7 +2,7 @@
 #include <Core.h>
 
 #include "Allocator.h"
-#include "CommandBuffer.h"
+#include "CommandList.h"
 #include "CommandQueue.h"
 #include "DescriptorHeap.h"
 #include "Device.h"
@@ -24,9 +24,9 @@ public:
     void BeginImGuiFrame();
     void EndImGuiFrame();
 
-    void ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& buffers, D3D12_COMMAND_LIST_TYPE type);
+    void ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandList>>& buffers, D3D12_COMMAND_LIST_TYPE type);
 
-    std::shared_ptr<CommandBuffer> GetCurrentCommandBuffer() { return m_commandBuffers[m_frameIndex]; }
+    std::shared_ptr<CommandList> GetCurrentCommandList() { return m_commandBuffers[m_frameIndex]; }
     std::shared_ptr<Texture> GetBackBuffer() { return m_swapChain->GetTexture(m_frameIndex); }
 
 private:
@@ -43,7 +43,7 @@ private:
 
     uint64_t m_frameIndex;
     uint64_t m_frameValues[FRAMES_IN_FLIGHT];
-    std::shared_ptr<CommandBuffer> m_commandBuffers[FRAMES_IN_FLIGHT];
+    std::shared_ptr<CommandList> m_commandBuffers[FRAMES_IN_FLIGHT];
 
     DescriptorHandle m_fontDescriptor;
 };

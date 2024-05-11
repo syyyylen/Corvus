@@ -37,14 +37,14 @@ void CorvusEditor::Run()
     {
         m_renderer->BeginFrame();
 
-        auto commandBuffer = m_renderer->GetCurrentCommandBuffer();
+        auto commandList = m_renderer->GetCurrentCommandList();
         auto texture = m_renderer->GetBackBuffer();
 
-        commandBuffer->Begin();
-        commandBuffer->ImageBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        commandList->Begin();
+        commandList->ImageBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-        commandBuffer->BindRenderTargets({ texture }, nullptr);
-        commandBuffer->ClearRenderTarget(texture, 1.0f, 8.0f, 0.0f, 1.0f);
+        commandList->BindRenderTargets({ texture }, nullptr);
+        commandList->ClearRenderTarget(texture, 1.0f, 8.0f, 0.0f, 1.0f);
 
         m_renderer->BeginImGuiFrame();
 
@@ -67,9 +67,9 @@ void CorvusEditor::Run()
 
         m_renderer->EndImGuiFrame();
 
-        commandBuffer->ImageBarrier(texture, D3D12_RESOURCE_STATE_PRESENT);
-        commandBuffer->End();
-        m_renderer->ExecuteCommandBuffers({ commandBuffer }, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        commandList->ImageBarrier(texture, D3D12_RESOURCE_STATE_PRESENT);
+        commandList->End();
+        m_renderer->ExecuteCommandBuffers({ commandList }, D3D12_COMMAND_LIST_TYPE_DIRECT);
 
         m_renderer->EndFrame();
         m_renderer->Present(true);

@@ -27,8 +27,8 @@ add_executable(Corvus main.cpp
         Src/RHI/SwapChain.h
         Src/RHI/Texture.cpp
         Src/RHI/Texture.h
-        Src/RHI/CommandBuffer.cpp
-        Src/RHI/CommandBuffer.h
+        Src/RHI/CommandList.cpp
+        Src/RHI/CommandList.h
         External/ImGui/imconfig.h
         External/ImGui/imgui.cpp
         External/ImGui/imgui.h

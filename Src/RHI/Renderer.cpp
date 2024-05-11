@@ -17,7 +17,7 @@ Renderer::Renderer(HWND hwnd) : m_frameIndex(0)
     LOG(Debug, "Renderer Initialization Completed");
 
     for (int i = 0; i < FRAMES_IN_FLIGHT; i++) {
-        m_commandBuffers[i] = std::make_shared<CommandBuffer>(m_device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+        m_commandBuffers[i] = std::make_shared<CommandList>(m_device, D3D12_COMMAND_LIST_TYPE_DIRECT);
         m_frameValues[i] = 0;
     }
 
@@ -91,7 +91,7 @@ void Renderer::EndImGuiFrame()
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), cmdList);
 }
 
-void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandBuffer>>& buffers, D3D12_COMMAND_LIST_TYPE type)
+void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandList>>& buffers, D3D12_COMMAND_LIST_TYPE type)
 {
     if(type == D3D12_COMMAND_LIST_TYPE_DIRECT)
     {

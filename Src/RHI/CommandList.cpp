@@ -1,7 +1,7 @@
-#include "CommandBuffer.h"
+#include "CommandList.h"
 
 namespace CorvusEngine {
-CommandBuffer::CommandBuffer(std::shared_ptr<Device> device, D3D12_COMMAND_LIST_TYPE commandQueueType) : m_type(commandQueueType)
+CommandList::CommandList(std::shared_ptr<Device> device, D3D12_COMMAND_LIST_TYPE commandQueueType) : m_type(commandQueueType)
 {
     HRESULT hr = device->GetDevice()->CreateCommandAllocator(m_type, IID_PPV_ARGS(&m_commandAllocator));
     if(FAILED(hr))
@@ -28,24 +28,24 @@ CommandBuffer::CommandBuffer(std::shared_ptr<Device> device, D3D12_COMMAND_LIST_
     }
 }
 
-CommandBuffer::~CommandBuffer()
+CommandList::~CommandList()
 {
     m_commandList->Release();
     m_commandAllocator->Release();
 }
 
-void CommandBuffer::Begin()
+void CommandList::Begin()
 {
     m_commandAllocator->Reset();
     m_commandList->Reset(m_commandAllocator, nullptr);
 }
 
-void CommandBuffer::End()
+void CommandList::End()
 {
     m_commandList->Close();
 }
 
-void CommandBuffer::ImageBarrier(std::shared_ptr<Texture> texture, D3D12_RESOURCE_STATES state)
+void CommandList::ImageBarrier(std::shared_ptr<Texture> texture, D3D12_RESOURCE_STATES state)
 {
     D3D12_RESOURCE_BARRIER barrier = {};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -62,7 +62,7 @@ void CommandBuffer::ImageBarrier(std::shared_ptr<Texture> texture, D3D12_RESOURC
     texture->SetState(state);
 }
 
-void CommandBuffer::BindRenderTargets(const std::vector<std::shared_ptr<Texture>> renderTargets, std::shared_ptr<Texture> depthTarget)
+void CommandList::BindRenderTargets(const std::vector<std::shared_ptr<Texture>> renderTargets, std::shared_ptr<Texture> depthTarget)
 {
     std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvDescriptors;
     D3D12_CPU_DESCRIPTOR_HANDLE dsvDescriptor;
@@ -77,7 +77,7 @@ void CommandBuffer::BindRenderTargets(const std::vector<std::shared_ptr<Texture>
     m_commandList->OMSetRenderTargets(rtvDescriptors.size(), rtvDescriptors.data(), false, depthTarget ? &dsvDescriptor : nullptr);
 }
 
-void CommandBuffer::ClearRenderTarget(std::shared_ptr<Texture> renderTarget, float r, float g, float b, float a)
+void CommandList::ClearRenderTarget(std::shared_ptr<Texture> renderTarget, float r, float g, float b, float a)
 {
     float clearValues[4] = { r, g, b, a };
     m_commandList->ClearRenderTargetView(renderTarget->m_rtv.CPU, clearValues, 0, nullptr);

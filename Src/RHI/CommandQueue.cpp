@@ -49,7 +49,7 @@ void CommandQueue::Wait(uint64_t target, uint64_t timeout)
     }
 }
 
-void CommandQueue::Submit(const std::vector<std::shared_ptr<CommandBuffer>> &buffers)
+void CommandQueue::Submit(const std::vector<std::shared_ptr<CommandList>> &buffers)
 {
     std::vector<ID3D12CommandList*> lists;
     for (auto& buffer : buffers) {

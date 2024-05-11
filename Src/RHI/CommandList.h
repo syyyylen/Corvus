@@ -6,11 +6,11 @@
 
 namespace CorvusEngine {
 
-class CommandBuffer 
+class CommandList
 {
 public:
-    CommandBuffer(std::shared_ptr<Device> device, D3D12_COMMAND_LIST_TYPE commandQueueType);
-    ~CommandBuffer();
+    CommandList(std::shared_ptr<Device> device, D3D12_COMMAND_LIST_TYPE commandQueueType);
+    ~CommandList();
 
     void Begin();
     void End();
