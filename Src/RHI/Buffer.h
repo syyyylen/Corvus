@@ -29,7 +29,11 @@ public:
 
     void SetState(D3D12_RESOURCE_STATES state) { m_state = state; }
 
+    GPUResource& GetResource() { return m_resource; }
+
 private:
+    friend class CommandList;
+
     DescriptorHandle m_descriptorHandle;
     GPUResource m_resource;
     D3D12_RESOURCE_STATES m_state;

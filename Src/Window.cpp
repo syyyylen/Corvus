@@ -105,4 +105,11 @@ void Window::Maximize()
     SetWindowPos(m_hwnd, HWND_TOP, workArea.left, workArea.top, workArea.right - workArea.left, workArea.bottom - workArea.top, SWP_SHOWWINDOW);
 }
 
+void Window::GetSize(uint32_t &width, uint32_t &height)
+{
+    RECT ClientRect;
+    GetClientRect(m_hwnd, &ClientRect);
+    width = ClientRect.right - ClientRect.left;
+    height = ClientRect.bottom - ClientRect.top;
+}
 } // CorvusEngine

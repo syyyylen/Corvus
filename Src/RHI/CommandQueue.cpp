@@ -37,7 +37,7 @@ uint64_t CommandQueue::Signal()
     return m_fenceValue;
 }
 
-void CommandQueue::Wait(uint64_t target, uint64_t timeout)
+void CommandQueue::WaitForFenceValue(uint64_t target, uint64_t timeout)
 {
     if (m_fence->GetCompletedValue() < target)
     {
@@ -47,6 +47,11 @@ void CommandQueue::Wait(uint64_t target, uint64_t timeout)
         if(WaitForSingleObject(event, timeout) == WAIT_TIMEOUT)
             LOG(Error, "Fence : GPU Timeout !");
     }
+}
+
+void CommandQueue::WaitGPUSide()
+{
+    m_commandQueue->Wait(m_fence, m_fenceValue);
 }
 
 void CommandQueue::Submit(const std::vector<std::shared_ptr<CommandList>> &buffers)

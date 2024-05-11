@@ -9,6 +9,8 @@ Renderer::Renderer(HWND hwnd) : m_frameIndex(0)
 {
     m_device = std::make_shared<Device>();
     m_directCommandQueue = std::make_shared<CommandQueue>(m_device, D3D12_COMMAND_LIST_TYPE_DIRECT);
+    m_computeCommandQueue = std::make_shared<CommandQueue>(m_device, D3D12_COMMAND_LIST_TYPE_COMPUTE);
+    m_copyCommandQueue = std::make_shared<CommandQueue>(m_device, D3D12_COMMAND_LIST_TYPE_COPY);
     m_heaps.RtvHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 512);
     m_heaps.ShaderHeap = std::make_shared<DescriptorHeap>(m_device, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2048);
     m_allocator = std::make_shared<Allocator>(m_device);
@@ -58,7 +60,7 @@ void Renderer::Resize(uint32_t width, uint32_t height)
 void Renderer::BeginFrame()
 {
     m_frameIndex = m_swapChain->AcquireImage();
-    m_directCommandQueue->Wait(m_frameValues[m_frameIndex], 10'000'000);
+    m_directCommandQueue->WaitForFenceValue(m_frameValues[m_frameIndex], 10'000'000);
 
     m_allocator->GetAllocator()->SetCurrentFrameIndex(m_frameIndex);
 }
@@ -97,6 +99,21 @@ void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandLi
     {
         m_directCommandQueue->Submit(buffers);
         m_directCommandQueue->Signal();
+        return;
+    }
+
+    if(type == D3D12_COMMAND_LIST_TYPE_COMPUTE)
+    {
+        m_computeCommandQueue->Submit(buffers);
+        m_computeCommandQueue->Signal();
+        return;
+    }
+
+    if(type == D3D12_COMMAND_LIST_TYPE_COPY)
+    {
+        m_copyCommandQueue->Submit(buffers);
+        m_copyCommandQueue->Signal();
+        return;
     }
 }
 
@@ -110,10 +127,67 @@ std::shared_ptr<Buffer> Renderer::CreateBuffer(uint64_t size, uint64_t stride, B
     return std::make_shared<Buffer>(m_allocator, size, stride, type, readback);
 }
 
+Uploader Renderer::CreateUploader()
+{
+    return Uploader(m_device, m_allocator);
+}
+
+void Renderer::FlushUploader(Uploader& uploader)
+{
+    uploader.m_commandList->Begin();
+
+    for(auto& command : uploader.m_commands)
+    {
+        auto cmdList = uploader.m_commandList;
+
+        switch (command.type) {
+            case Uploader::UploadCommandType::HostToDeviceShared: {
+                void *pData;
+                command.destBuffer->Map(0, 0, &pData);
+                memcpy(pData, command.data, command.size);
+                command.destBuffer->Unmap(0, 0);
+                break;
+            }
+            case Uploader::UploadCommandType::BufferToBuffer:
+            case Uploader::UploadCommandType::HostToDeviceLocal: {
+                cmdList->CopyBufferToBuffer(command.destBuffer, command.sourceBuffer);
+                break;
+            }
+            case Uploader::UploadCommandType::TextureToTexture: {
+                cmdList->CopyTextureToTexture(command.destTexture, command.sourceTexture);
+                break;
+            }
+        }
+    }
+
+    uploader.m_commandList->End();
+    ExecuteCommandBuffers({ uploader.m_commandList }, D3D12_COMMAND_LIST_TYPE_COPY);
+    WaitForPreviousDeviceSubmit(D3D12_COMMAND_LIST_TYPE_COPY);
+    uploader.m_commands.clear();
+}
+
 void Renderer::WaitForPreviousFrame()
 {
     uint64_t wait = m_directCommandQueue->Signal();
-    m_directCommandQueue->Wait(wait, 10'000'000);
+    m_directCommandQueue->WaitForFenceValue(wait, 10'000'000);
+}
+
+void Renderer::WaitForPreviousDeviceSubmit(D3D12_COMMAND_LIST_TYPE type)
+{
+    switch (type) {
+        case D3D12_COMMAND_LIST_TYPE_DIRECT: {
+            m_directCommandQueue->WaitGPUSide();
+            break;
+        }
+        case D3D12_COMMAND_LIST_TYPE_COMPUTE:  {
+            m_computeCommandQueue->WaitGPUSide();
+            break;
+        }
+        case D3D12_COMMAND_LIST_TYPE_COPY: {
+            m_copyCommandQueue->WaitGPUSide();
+            break;
+        }
+    }
 }
 
 }

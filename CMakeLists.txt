@@ -49,7 +49,9 @@ add_executable(Corvus main.cpp
         Src/RHI/GraphicsPipeline.cpp
         Src/RHI/GraphicsPipeline.h
         Src/RHI/Buffer.cpp
-        Src/RHI/Buffer.h)
+        Src/RHI/Buffer.h
+        Src/RHI/Uploader.cpp
+        Src/RHI/Uploader.h)
 
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/External)
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Core)

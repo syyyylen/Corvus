@@ -18,6 +18,7 @@ public:
     void DefineOnResize(std::function<void(int width, int height)> resizeFunc) { m_resize = resizeFunc; }
     void Maximize();
     HWND GetHandle() { return m_hwnd; }
+    void GetSize(uint32_t& width, uint32_t& height);
 
 private:
     bool m_isRunning;

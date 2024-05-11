@@ -14,7 +14,8 @@ public:
     ~CommandQueue();
 
     uint64_t Signal();
-    void Wait(uint64_t target, uint64_t timeout);
+    void WaitForFenceValue(uint64_t target, uint64_t timeout);
+    void WaitGPUSide();
     void Submit(const std::vector<std::shared_ptr<CommandList>>& buffers);
 
     ID3D12CommandQueue* GetCommandQueue() { return m_commandQueue; }

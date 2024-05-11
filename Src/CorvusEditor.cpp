@@ -3,6 +3,7 @@
 #include <ImGui/imgui.h>
 #include "ShaderCompiler.h"
 #include "RHI/Buffer.h"
+#include "RHI/Uploader.h"
 
 namespace CorvusEngine{
 
@@ -39,6 +40,10 @@ CorvusEditor::CorvusEditor()
     };
 
     m_vertexBuffer = m_renderer->CreateBuffer(sizeof(vertices), sizeof(float) * 3, BufferType::Vertex, false);
+
+    Uploader uploader = m_renderer->CreateUploader();
+    uploader.CopyHostToDeviceLocal(vertices, sizeof(vertices), m_vertexBuffer);
+    m_renderer->FlushUploader(uploader);
 }
 
 CorvusEditor::~CorvusEditor()
@@ -51,6 +56,9 @@ void CorvusEditor::Run()
 {
     while(m_window->IsRunning())
     {
+        uint32_t width, height;
+        m_window->GetSize(width, height);
+
         m_renderer->BeginFrame();
 
         auto commandList = m_renderer->GetCurrentCommandList();
@@ -59,8 +67,16 @@ void CorvusEditor::Run()
         commandList->Begin();
         commandList->ImageBarrier(texture, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+        commandList->SetViewport(0, 0, width, height);
+        commandList->SetTopology(Topology::TriangleList);
+
         commandList->BindRenderTargets({ texture }, nullptr);
+        commandList->BindGraphicsPipeline(m_trianglePipeline);
+        commandList->BindVertexBuffer(m_vertexBuffer);
+
         commandList->ClearRenderTarget(texture, 1.0f, 8.0f, 0.0f, 1.0f);
+
+        commandList->Draw(3);
 
         m_renderer->BeginImGuiFrame();
 

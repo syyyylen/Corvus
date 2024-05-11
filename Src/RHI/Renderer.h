@@ -9,6 +9,7 @@
 #include "Device.h"
 #include "GraphicsPipeline.h"
 #include "SwapChain.h"
+#include "Uploader.h"
 
 namespace CorvusEngine{
 
@@ -41,14 +42,19 @@ public:
 
     std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(GraphicsPipelineSpecs& specs);
     std::shared_ptr<Buffer> CreateBuffer(uint64_t size, uint64_t stride, BufferType type, bool readback);
+    Uploader CreateUploader();
+
+    void FlushUploader(Uploader& uploader);
 
 private:
-    // void FlushQueues();
     void WaitForPreviousFrame();
+    void WaitForPreviousDeviceSubmit(D3D12_COMMAND_LIST_TYPE type);
 
 private:
     std::shared_ptr<Device> m_device;
     std::shared_ptr<CommandQueue> m_directCommandQueue;
+    std::shared_ptr<CommandQueue> m_computeCommandQueue;
+    std::shared_ptr<CommandQueue> m_copyCommandQueue;
     std::shared_ptr<Allocator> m_allocator;
     std::shared_ptr<SwapChain> m_swapChain;
     Heaps m_heaps;

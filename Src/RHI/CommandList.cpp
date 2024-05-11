@@ -82,4 +82,76 @@ void CommandList::ClearRenderTarget(std::shared_ptr<Texture> renderTarget, float
     float clearValues[4] = { r, g, b, a };
     m_commandList->ClearRenderTargetView(renderTarget->m_rtv.CPU, clearValues, 0, nullptr);
 }
+
+void CommandList::SetViewport(float x, float y, float width, float height)
+{
+    D3D12_VIEWPORT Viewport = {};
+    Viewport.Width = width;
+    Viewport.Height = height;
+    Viewport.MinDepth = 0.0f;
+    Viewport.MaxDepth = 1.0f;
+    Viewport.TopLeftX = x;
+    Viewport.TopLeftY = y;
+
+    D3D12_RECT Rect;
+    Rect.right = width;
+    Rect.bottom = height;
+    Rect.top = 0.0f;
+    Rect.left = 0.0f;
+
+    m_commandList->RSSetViewports(1, &Viewport);
+    m_commandList->RSSetScissorRects(1, &Rect);
+}
+
+void CommandList::SetTopology(Topology topology)
+{
+    m_commandList->IASetPrimitiveTopology(D3D12_PRIMITIVE_TOPOLOGY(topology));
+}
+
+void CommandList::BindVertexBuffer(std::shared_ptr<Buffer> buffer)
+{
+    m_commandList->IASetVertexBuffers(0, 1, &buffer->m_VBV);
+}
+
+void CommandList::BindIndexBuffer(std::shared_ptr<Buffer> buffer)
+{
+    m_commandList->IASetIndexBuffer(&buffer->m_IBV);
+}
+
+void CommandList::BindGraphicsPipeline(std::shared_ptr<GraphicsPipeline> pipeline)
+{
+    m_commandList->SetPipelineState(pipeline->GetPipelineState());
+    m_commandList->SetGraphicsRootSignature(pipeline->GetRootSignature());
+}
+
+void CommandList::Draw(int vertexCount)
+{
+    m_commandList->DrawInstanced(vertexCount, 1, 0, 0);
+}
+
+void CommandList::DrawIndexed(int indexCount)
+{
+    m_commandList->DrawIndexedInstanced(indexCount, 1, 0, 0, 0);
+}
+
+void CommandList::CopyTextureToTexture(std::shared_ptr<Texture> dst, std::shared_ptr<Texture> src)
+{
+    D3D12_TEXTURE_COPY_LOCATION BlitSource = {};
+    BlitSource.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+    BlitSource.pResource = src->GetResource().Resource;
+    BlitSource.SubresourceIndex = 0;
+
+    D3D12_TEXTURE_COPY_LOCATION BlitDest = {};
+    BlitDest.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+    BlitDest.pResource = dst->GetResource().Resource;
+    BlitDest.SubresourceIndex = 0;
+
+    m_commandList->CopyTextureRegion(&BlitDest, 0, 0, 0, &BlitSource, nullptr);
+}
+
+void CommandList::CopyBufferToBuffer(std::shared_ptr<Buffer> dst, std::shared_ptr<Buffer> src)
+{
+    m_commandList->CopyResource(dst->GetResource().Resource, src->GetResource().Resource);
+}
+
 } // CorvusEngine
