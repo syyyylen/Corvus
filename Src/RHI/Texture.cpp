@@ -23,7 +23,7 @@ Texture::Texture(std::shared_ptr<Device> device) : m_device(device)
 {
 }
 
-Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<Allocator> allocator, uint32_t width, uint32_t height, DXGI_FORMAT format, TextureType type)
+Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<Allocator> allocator, uint32_t width, uint32_t height, TextureFormat format, TextureType type)
     : m_device(device), m_format(format)
 {
     switch(type)
@@ -55,7 +55,7 @@ Texture::Texture(std::shared_ptr<Device> device, std::shared_ptr<Allocator> allo
     ResourceDesc.Height = height;
     ResourceDesc.DepthOrArraySize = 1;
     ResourceDesc.MipLevels = 1;
-    ResourceDesc.Format = format;
+    ResourceDesc.Format = (DXGI_FORMAT)format;
     ResourceDesc.SampleDesc.Count = 1;
     ResourceDesc.SampleDesc.Quality = 0;
     ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
@@ -75,7 +75,7 @@ void Texture::CreateRenderTarget(std::shared_ptr<DescriptorHeap> heap)
     m_rtv = heap->Allocate();
 
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-    rtvDesc.Format = m_format;
+    rtvDesc.Format = (DXGI_FORMAT)m_format;
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
     m_device->GetDevice()->CreateRenderTargetView(m_resource.Resource, &rtvDesc, m_rtv.CPU);
 }
@@ -85,7 +85,7 @@ void Texture::CreateDepthTarget(std::shared_ptr<DescriptorHeap> heap)
     m_dsv = heap->Allocate();
 
     D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-    dsvDesc.Format = m_format;
+    dsvDesc.Format = (DXGI_FORMAT)m_format;
     dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     m_device->GetDevice()->CreateDepthStencilView(m_resource.Resource, &dsvDesc, m_dsv.CPU);
 }
@@ -95,7 +95,7 @@ void Texture::CreateShaderResource(std::shared_ptr<DescriptorHeap> heap)
     m_srvUav = heap->Allocate();
 
     D3D12_SHADER_RESOURCE_VIEW_DESC ShaderResourceView = {};
-    ShaderResourceView.Format = m_format;
+    ShaderResourceView.Format = (DXGI_FORMAT)m_format;
     ShaderResourceView.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     ShaderResourceView.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     ShaderResourceView.Texture2D.MipLevels = 1;
@@ -108,7 +108,7 @@ void Texture::CreateStorage(std::shared_ptr<DescriptorHeap> heap)
     m_srvUav = heap->Allocate();
 
     D3D12_UNORDERED_ACCESS_VIEW_DESC UnorderedAccessView = {};
-    UnorderedAccessView.Format = m_format;
+    UnorderedAccessView.Format = (DXGI_FORMAT)m_format;
     UnorderedAccessView.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
     m_device->GetDevice()->CreateUnorderedAccessView(m_resource.Resource, nullptr, &UnorderedAccessView, m_srvUav.CPU);
 }

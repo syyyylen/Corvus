@@ -46,7 +46,7 @@ SwapChain::SwapChain(std::shared_ptr<Device> device, std::shared_ptr<CommandQueu
         m_textures[i] = std::make_shared<Texture>(m_device);
         m_textures[i]->m_resource.Resource = m_buffers[i];
         m_textures[i]->m_rtv = m_descriptors[i];
-        m_textures[i]->m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        m_textures[i]->m_format = TextureFormat::RGBA8;
         m_textures[i]->SetState(D3D12_RESOURCE_STATE_COMMON);
     }
 
@@ -112,7 +112,7 @@ void SwapChain::Resize(uint32_t width, uint32_t height)
             m_textures[i] = std::make_shared<Texture>(m_device);
             m_textures[i]->m_resource.Resource = m_buffers[i];
             m_textures[i]->m_rtv = m_descriptors[i];
-            m_textures[i]->m_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            m_textures[i]->m_format = TextureFormat::RGBA8;
             m_textures[i]->SetState(D3D12_RESOURCE_STATE_COMMON);
         }
     }

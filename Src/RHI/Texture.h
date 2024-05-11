@@ -16,11 +16,19 @@ enum class TextureType
     Copy
 };
 
+enum class TextureFormat
+{
+    RGBA8 = DXGI_FORMAT_R8G8B8A8_UNORM,
+    RGBA32Float = DXGI_FORMAT_R32G32B32A32_FLOAT,
+    RGBA16Float = DXGI_FORMAT_R16G16B16A16_FLOAT,
+    R32Depth = DXGI_FORMAT_D32_FLOAT
+};
+
 class Texture 
 {
 public:
     Texture(std::shared_ptr<Device> device);
-    Texture(std::shared_ptr<Device> device, std::shared_ptr<Allocator> allocator, uint32_t width, uint32_t height, DXGI_FORMAT format, TextureType type);
+    Texture(std::shared_ptr<Device> device, std::shared_ptr<Allocator> allocator, uint32_t width, uint32_t height, TextureFormat format, TextureType type);
     ~Texture();
 
     void CreateRenderTarget(std::shared_ptr<DescriptorHeap> heap);
@@ -40,7 +48,7 @@ private:
     friend class SwapChain;
 
     std::shared_ptr<Device> m_device;
-    DXGI_FORMAT m_format;
+    TextureFormat m_format;
     D3D12_RESOURCE_STATES m_state;
 
     GPUResource m_resource;

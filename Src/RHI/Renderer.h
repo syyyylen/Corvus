@@ -6,6 +6,7 @@
 #include "CommandQueue.h"
 #include "DescriptorHeap.h"
 #include "Device.h"
+#include "GraphicsPipeline.h"
 #include "SwapChain.h"
 
 namespace CorvusEngine{
@@ -28,6 +29,8 @@ public:
 
     std::shared_ptr<CommandList> GetCurrentCommandList() { return m_commandBuffers[m_frameIndex]; }
     std::shared_ptr<Texture> GetBackBuffer() { return m_swapChain->GetTexture(m_frameIndex); }
+
+    std::shared_ptr<GraphicsPipeline> CreateGraphicsPipeline(GraphicsPipelineSpecs& specs);
 
 private:
     // void FlushQueues();

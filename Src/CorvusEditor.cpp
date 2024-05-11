@@ -20,9 +20,16 @@ CorvusEditor::CorvusEditor()
 
     m_renderer = std::make_unique<Renderer>(m_window->GetHandle());
 
-    Shader shader;
-    ShaderCompiler::CompileShader("../../Shaders/SimpleVertex.hlsl", ShaderType::Vertex, shader);
-    ShaderCompiler::CompileShader("../../Shaders/SimplePixel.hlsl", ShaderType::Pixel, shader);
+    GraphicsPipelineSpecs specs;
+    specs.FormatCount = 1;
+    specs.Formats[0] = TextureFormat::RGBA8;
+    specs.DepthEnabled = false;
+    specs.Cull = CullMode::Back;
+    specs.Fill = FillMode::Solid;
+    ShaderCompiler::CompileShader("../../Shaders/SimpleVertex.hlsl", ShaderType::Vertex, specs.ShadersBytecodes[ShaderType::Vertex]);
+    ShaderCompiler::CompileShader("../../Shaders/SimplePixel.hlsl", ShaderType::Pixel, specs.ShadersBytecodes[ShaderType::Pixel]);
+
+    m_trianglePipeline = m_renderer->CreateGraphicsPipeline(specs);
 }
 
 CorvusEditor::~CorvusEditor()

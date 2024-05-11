@@ -45,7 +45,9 @@ add_executable(Corvus main.cpp
         External/ImGui/imstb_textedit.h
         External/ImGui/imstb_truetype.h
         Src/ShaderCompiler.cpp
-        Src/ShaderCompiler.h)
+        Src/ShaderCompiler.h
+        Src/RHI/GraphicsPipeline.cpp
+        Src/RHI/GraphicsPipeline.h)
 
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/External)
 target_include_directories(Corvus PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Core)

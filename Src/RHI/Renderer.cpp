@@ -100,6 +100,11 @@ void Renderer::ExecuteCommandBuffers(const std::vector<std::shared_ptr<CommandLi
     }
 }
 
+std::shared_ptr<GraphicsPipeline> Renderer::CreateGraphicsPipeline(GraphicsPipelineSpecs& specs)
+{
+    return std::make_shared<GraphicsPipeline>(m_device, specs);
+}
+
 void Renderer::WaitForPreviousFrame()
 {
     uint64_t wait = m_directCommandQueue->Signal();
