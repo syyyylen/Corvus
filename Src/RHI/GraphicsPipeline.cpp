@@ -236,7 +236,8 @@ GraphicsPipeline::GraphicsPipeline(std::shared_ptr<Device> device, GraphicsPipel
 GraphicsPipeline::~GraphicsPipeline()
 {
     m_rootSignature->Release();
-    m_pipelineState->Release();
+    if(m_pipelineState)
+        m_pipelineState->Release();
 }
 
 }

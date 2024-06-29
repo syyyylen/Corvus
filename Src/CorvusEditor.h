@@ -19,6 +19,7 @@ private:
     std::unique_ptr<Renderer> m_renderer;
     std::shared_ptr<GraphicsPipeline> m_trianglePipeline;
     std::shared_ptr<Buffer> m_vertexBuffer;
+    std::shared_ptr<Buffer> m_indicesBuffer;
 };
 
 }

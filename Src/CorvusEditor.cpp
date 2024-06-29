@@ -26,7 +26,7 @@ CorvusEditor::CorvusEditor()
     specs.FormatCount = 1;
     specs.Formats[0] = TextureFormat::RGBA8;
     specs.DepthEnabled = false;
-    specs.Cull = CullMode::Back;
+    specs.Cull = CullMode::None;
     specs.Fill = FillMode::Solid;
     ShaderCompiler::CompileShader("../../Shaders/SimpleVertex.hlsl", ShaderType::Vertex, specs.ShadersBytecodes[ShaderType::Vertex]);
     ShaderCompiler::CompileShader("../../Shaders/SimplePixel.hlsl", ShaderType::Pixel, specs.ShadersBytecodes[ShaderType::Pixel]);
@@ -34,15 +34,23 @@ CorvusEditor::CorvusEditor()
     m_trianglePipeline = m_renderer->CreateGraphicsPipeline(specs);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
+         0.5f,  0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        -0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f
+    };
+
+    uint32_t indices[] = {
+        0, 1, 3,
+        1, 2, 3
     };
 
     m_vertexBuffer = m_renderer->CreateBuffer(sizeof(vertices), sizeof(float) * 3, BufferType::Vertex, false);
+    m_indicesBuffer = m_renderer->CreateBuffer(sizeof(indices), sizeof(uint32_t), BufferType::Index, false);
 
     Uploader uploader = m_renderer->CreateUploader();
     uploader.CopyHostToDeviceLocal(vertices, sizeof(vertices), m_vertexBuffer);
+    uploader.CopyHostToDeviceLocal(indices, sizeof(indices), m_indicesBuffer);
     m_renderer->FlushUploader(uploader);
 }
 
@@ -73,10 +81,11 @@ void CorvusEditor::Run()
         commandList->BindRenderTargets({ texture }, nullptr);
         commandList->BindGraphicsPipeline(m_trianglePipeline);
         commandList->BindVertexBuffer(m_vertexBuffer);
+        commandList->BindIndexBuffer(m_indicesBuffer);
 
         commandList->ClearRenderTarget(texture, 1.0f, 8.0f, 0.0f, 1.0f);
 
-        commandList->Draw(3);
+        commandList->DrawIndexed(6);
 
         m_renderer->BeginImGuiFrame();
 
@@ -103,8 +112,8 @@ void CorvusEditor::Run()
         commandList->End();
         m_renderer->ExecuteCommandBuffers({ commandList }, D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-        m_renderer->EndFrame();
         m_renderer->Present(true);
+        m_renderer->EndFrame();
 
         m_window->BroadCast();
     }
